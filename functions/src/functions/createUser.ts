@@ -17,4 +17,10 @@ export const createUser = functions.auth.user().onCreate(async user => {
       emailVerified,
       photoURL
     });
+
+  await db
+    .collection("users")
+    .doc(user.uid)
+    .collection("transactions")
+    .add({});
 });
