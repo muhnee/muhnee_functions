@@ -1,6 +1,8 @@
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 
+import moment from "moment";
+
 admin.initializeApp(functions.config().firebase);
 
 export const createUser = functions.auth.user().onCreate(async user => {
@@ -21,6 +23,29 @@ export const createUser = functions.auth.user().onCreate(async user => {
   await db
     .collection("users")
     .doc(user.uid)
-    .collection("transactions")
-    .add({});
+    .collection("budget")
+    .doc(
+      `${moment()
+        .year()
+        .toString()}-${moment()
+        .month()
+        .toString()}`
+    )
+    .set({ year: moment().year(), month: moment().month() });
+
+  await db
+    .collection("users")
+    .doc(user.uid)
+    .collection("categories")
+    .doc("expense")
+    .collection("types")
+    .add({ name: "test" });
+
+  await db
+    .collection("users")
+    .doc(user.uid)
+    .collection("categories")
+    .doc("income")
+    .collection("types")
+    .add({ name: "test" });
 });
