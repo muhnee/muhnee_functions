@@ -1,5 +1,10 @@
 import { createUser } from "./functions/createUser";
 
+import {
+  onCreateMonthlyTransactions,
+  onAddNewTransaction
+} from "./functions/transactions";
+
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
 //
@@ -8,3 +13,7 @@ import { createUser } from "./functions/createUser";
 // });
 
 export const createFirestoreUser = createUser;
+
+export const updateMonthlyTransactionDoc = onCreateMonthlyTransactions;
+
+export const addNewTransaction = onAddNewTransaction;
