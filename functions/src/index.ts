@@ -2,7 +2,9 @@ import { createUser } from "./functions/createUser";
 
 import {
   onCreateMonthlyTransactions,
-  onAddNewTransaction
+  onAddNewTransaction,
+  onUpdateTransaction,
+  onDeleteTransaction
 } from "./functions/transactions";
 
 // // Start writing Firebase Functions
@@ -17,3 +19,7 @@ export const createFirestoreUser = createUser;
 export const updateMonthlyTransactionDoc = onCreateMonthlyTransactions;
 
 export const addNewTransaction = onAddNewTransaction;
+
+export const updateExistingTransaction = onUpdateTransaction;
+
+export const deleteTransaction = onDeleteTransaction;
