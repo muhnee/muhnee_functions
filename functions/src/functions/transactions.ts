@@ -76,47 +76,55 @@ export const onUpdateTransaction = functions.firestore
     if (currentMonth.exists) {
       const dataFromCurrentMonth: any = currentMonth.data();
       if (previousValue && newValue) {
-        if (previousValue.type === "expense") {
+        if (previousValue.type === "expense" && newValue.type === "expense") {
           await db
             .collection("users")
             .doc(context.params.userId)
             .collection("budget")
             .doc(context.params.month)
             .update({
-              expenses: dataFromCurrentMonth.expense - previousValue.expense
+              expenses:
+                dataFromCurrentMonth.expenses -
+                previousValue.amount +
+                newValue.amount
             });
         }
 
-        if (previousValue.type === "income") {
+        if (previousValue.type === "income" && newValue.type === "income") {
           await db
             .collection("users")
             .doc(context.params.userId)
             .collection("budget")
             .doc(context.params.month)
             .update({
-              expenses: dataFromCurrentMonth.income - previousValue.income
+              income:
+                dataFromCurrentMonth.income -
+                previousValue.amount +
+                newValue.amount
             });
         }
 
-        if (newValue.type === "expense") {
+        if (previousValue.type === "expense" && newValue.type === "income") {
           await db
             .collection("users")
             .doc(context.params.userId)
             .collection("budget")
             .doc(context.params.month)
             .update({
-              expenses: dataFromCurrentMonth.expense + newValue.expense
+              expenses: dataFromCurrentMonth.expenses - previousValue.amount,
+              income: dataFromCurrentMonth.income + newValue.amount
             });
         }
 
-        if (newValue.type === "income") {
+        if (previousValue.type === "income" && newValue.type === "expense") {
           await db
             .collection("users")
             .doc(context.params.userId)
             .collection("budget")
             .doc(context.params.month)
             .update({
-              expenses: dataFromCurrentMonth.income + newValue.income
+              income: dataFromCurrentMonth.income - previousValue.amount,
+              expenses: dataFromCurrentMonth.expenses + newValue.amount
             });
         }
       }
@@ -126,6 +134,7 @@ export const onUpdateTransaction = functions.firestore
 export const onDeleteTransaction = functions.firestore
   .document("users/{userId}/budget/{month}/transactions/{transaction}")
   .onDelete(async (snap, context) => {
+    console.log(snap);
     const deletedValue = snap.data();
 
     // get current month data
@@ -145,7 +154,7 @@ export const onDeleteTransaction = functions.firestore
           .collection("budget")
           .doc(context.params.month)
           .update({
-            expenses: dataFromCurrentMonth.expense - deletedValue.expense
+            expenses: dataFromCurrentMonth.expenses - deletedValue.amount
           });
       }
 
@@ -156,7 +165,7 @@ export const onDeleteTransaction = functions.firestore
           .collection("budget")
           .doc(context.params.month)
           .update({
-            expenses: dataFromCurrentMonth.income - deletedValue.income
+            income: dataFromCurrentMonth.income - deletedValue.amount
           });
       }
     }
