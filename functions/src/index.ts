@@ -1,7 +1,6 @@
 import { createUser } from "./functions/createUser";
 
 import {
-  onCreateMonthlyTransactions,
   onAddNewTransaction,
   onUpdateTransaction,
   onDeleteTransaction
@@ -15,8 +14,6 @@ import {
 // });
 
 export const createFirestoreUser = createUser;
-
-export const updateMonthlyTransactionDoc = onCreateMonthlyTransactions;
 
 export const addNewTransaction = onAddNewTransaction;
 

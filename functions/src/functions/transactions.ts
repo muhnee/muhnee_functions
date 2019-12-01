@@ -3,24 +3,6 @@ import admin from "firebase-admin";
 
 const db = admin.firestore();
 
-export const onCreateMonthlyTransactions = functions.firestore
-  .document("users/{userId}/budget/{month}")
-  .onCreate(async (change, context) => {
-    const month = context.params.month;
-
-    await db
-      .collection("users")
-      .doc(context.params.userId)
-      .collection("budget")
-      .doc(context.params.month)
-      .update({
-        year: month.split("-")[0],
-        month: month.split("-")[1],
-        expenses: 0,
-        income: 0
-      });
-  });
-
 export const onAddNewTransaction = functions.firestore
   .document("users/{userId}/budget/{month}/transactions/{transaction}")
   .onCreate(async (snapshot, context) => {
@@ -56,6 +38,22 @@ export const onAddNewTransaction = functions.firestore
             income: dataFromCurrentMonth.income + transaction.amount
           });
       }
+    } else {
+      // we create the month then add the transaction
+      const { month } = context.params;
+      const transaction: any = snapshot.data();
+
+      await db
+        .collection("users")
+        .doc(context.params.userId)
+        .collection("budget")
+        .doc(context.params.month)
+        .set({
+          year: month.split("-")[0],
+          month: month.split("-")[1],
+          expenses: transaction.type === "expense" ? transaction.amount : 0,
+          income: transaction.type === "income" ? transaction.amount : 0
+        });
     }
   });
 
