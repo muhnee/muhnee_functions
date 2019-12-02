@@ -39,7 +39,15 @@ export const createUser = functions.auth.user().onCreate(async user => {
     .collection("categories")
     .doc("expense")
     .collection("types")
-    .add({ name: "test" });
+    .add({ name: "Food" });
+
+  await db
+    .collection("users")
+    .doc(user.uid)
+    .collection("categories")
+    .doc("expense")
+    .collection("types")
+    .add({ name: "Bills" });
 
   await db
     .collection("users")
@@ -47,5 +55,5 @@ export const createUser = functions.auth.user().onCreate(async user => {
     .collection("categories")
     .doc("income")
     .collection("types")
-    .add({ name: "test" });
+    .add({ name: "Income" });
 });
