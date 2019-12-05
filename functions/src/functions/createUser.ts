@@ -17,7 +17,8 @@ export const createUser = functions.auth.user().onCreate(async user => {
       email,
       displayName,
       emailVerified,
-      photoURL
+      photoURL,
+      onboarded: false
     });
 
   await db
