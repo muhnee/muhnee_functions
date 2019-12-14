@@ -17,20 +17,16 @@ export const createUser = functions.auth.user().onCreate(async user => {
       email,
       displayName,
       emailVerified,
-      photoURL
+      photoURL,
+      onboarded: false,
+      monthlySavingsGoal: 0
     });
 
   await db
     .collection("users")
     .doc(user.uid)
     .collection("budget")
-    .doc(
-      `${moment()
-        .year()
-        .toString()}-${moment()
-        .month()
-        .toString()}`
-    )
+    .doc(`${moment().year()}-${moment().month() + 1}`)
     .set({ year: moment().year(), month: moment().month() });
 
   await db

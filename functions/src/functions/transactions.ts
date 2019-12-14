@@ -14,6 +14,11 @@ export const onAddNewTransaction = functions.firestore
       .doc(context.params.month)
       .get();
 
+    const userDoc = await db
+      .collection("users")
+      .doc(context.params.userId)
+      .get();
+
     if (currentMonth.exists) {
       const dataFromCurrentMonth: any = currentMonth.data();
 
@@ -43,6 +48,8 @@ export const onAddNewTransaction = functions.firestore
       const { month } = context.params;
       const transaction: any = snapshot.data();
 
+      const userDocument: any = userDoc.data();
+
       await db
         .collection("users")
         .doc(context.params.userId)
@@ -52,7 +59,8 @@ export const onAddNewTransaction = functions.firestore
           year: month.split("-")[0],
           month: month.split("-")[1],
           expenses: transaction.type === "expense" ? transaction.amount : 0,
-          income: transaction.type === "income" ? transaction.amount : 0
+          income: transaction.type === "income" ? transaction.amount : 0,
+          savingsGoal: userDocument.monthlySavingsGoal || 0
         });
     }
   });
