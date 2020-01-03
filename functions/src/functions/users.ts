@@ -53,3 +53,15 @@ export const createUser = functions.auth.user().onCreate(async user => {
     .collection("types")
     .add({ name: "Income" });
 });
+
+export const onDeleteUser = functions.auth.user().onDelete(async user => {
+  const db = admin.firestore();
+
+  await db
+    .collection("users")
+    .doc(user.uid)
+    .delete();
+  const storage = admin.storage();
+
+  await storage.bucket().deleteFiles({ prefix: `users/${user.uid}` });
+});

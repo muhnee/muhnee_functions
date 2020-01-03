@@ -1,4 +1,4 @@
-import { createUser } from "./functions/createUser";
+import { createUser, onDeleteUser } from "./functions/users";
 
 import {
   onAddNewTransaction,
@@ -14,6 +14,8 @@ import {
 // });
 
 export const createFirestoreUser = createUser;
+
+export const deleteFirestoreUser = onDeleteUser;
 
 export const addNewTransaction = onAddNewTransaction;
 
