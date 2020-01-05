@@ -125,6 +125,14 @@
     through2 "^3.0.0"
     xdg-basedir "^4.0.0"
 
+"@google/maps@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@google/maps/-/maps-1.0.2.tgz#5100e29f3ef7f0384a9210c486dde8c6c8b4c8ea"
+  integrity sha512-iTsvIIgVjIicC+UdLCJOMSBnOmLnmgnOXrjTBUUQr/ffBMfH9GdnlrA9R+vH/kZSFEp9AZUDw0vJ5ES6avfTPQ==
+  dependencies:
+    https-proxy-agent "^3.0.0"
+    uuid ">=2.2.1"
+
 "@grpc/grpc-js@0.6.9":
   version "0.6.9"
   resolved "https://registry.yarnpkg.com/@grpc/grpc-js/-/grpc-js-0.6.9.tgz#49e0b32b92b822df294cc576df169cc6112063b4"
@@ -224,6 +232,11 @@
     "@types/body-parser" "*"
     "@types/express-serve-static-core" "*"
     "@types/serve-static" "*"
+
+"@types/google__maps@^0.5.11":
+  version "0.5.11"
+  resolved "https://registry.yarnpkg.com/@types/google__maps/-/google__maps-0.5.11.tgz#f565e0c16f853602b9e89e568200014b017df175"
+  integrity sha512-Se9bGlZ5VVVHmx4F1uwdPUo213cwkoLc2CZMLJ9+gYOCp/4NHe7taGJxK5juCVTxU76ISbT3biugmC3IZme4LQ==
 
 "@types/lodash@^4.14.104":
   version "4.14.149"
@@ -1690,7 +1703,7 @@ utils-merge@1.0.1:
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
 
-uuid@^3.3.2:
+uuid@>=2.2.1, uuid@^3.3.2:
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.3.tgz#4568f0216e78760ee1dbf3a4d2cf53e224112866"
   integrity sha512-pW0No1RGHgzlpHJO1nsVrHKpOEIxkGg1xB+v0ZmdNH5OAeAwzAVrCnI2/6Mtx+Uys6iaylxa+D3g4j63IKKjSQ==
