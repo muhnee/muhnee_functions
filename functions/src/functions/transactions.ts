@@ -24,7 +24,8 @@ export const onAddNewTransaction = functions.firestore
 
       const transaction: any = snapshot.data();
 
-      if (transaction.type === "expense") {
+      const transactionType = transaction.type.toLowerCase();
+      if (transactionType === "expense") {
         await db
           .collection("users")
           .doc(context.params.userId)
@@ -33,7 +34,7 @@ export const onAddNewTransaction = functions.firestore
           .update({
             expenses: dataFromCurrentMonth.expenses + transaction.amount
           });
-      } else if (transaction.type === "income") {
+      } else if (transactionType === "income") {
         await db
           .collection("users")
           .doc(context.params.userId)
