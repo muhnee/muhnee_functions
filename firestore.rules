@@ -9,12 +9,12 @@ service cloud.firestore {
       allow read, write: if request.auth.uid == userId;
     }
 
-    match /users/{userId}/categories/{document=**}{
+    match /users/{userId}/categories/{document=**} {
       allow read, write: if request.auth.uid == userId;
     }
 
-    match /terms {
-      allow read;
+    match /config/global {
+      allow read: if true;
     }
   }
   
