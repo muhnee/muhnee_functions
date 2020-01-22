@@ -6,6 +6,7 @@ import {
   onDeleteTransaction
 } from "./functions/transactions";
 import { geosuggestions } from "./functions/geosuggestions";
+import { getSummary } from "./functions/query";
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -25,3 +26,5 @@ export const updateExistingTransaction = onUpdateTransaction;
 export const deleteTransaction = onDeleteTransaction;
 
 export const getGeosuggestions = geosuggestions;
+
+export const getSummaryForTransactions = getSummary;
