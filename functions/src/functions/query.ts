@@ -80,7 +80,7 @@ export const getCurrentTransactionSummary = functions.https.onCall(
     const summaryType = data.summaryType;
     const transactionType = data.transactionType;
 
-    const date = moment();
+    const date = data.date ? moment(data.date) : moment();
 
     const summaryTypes = ["week", "month", "year"];
 
@@ -187,8 +187,10 @@ export const getCurrentTransactionSummary = functions.https.onCall(
           recurringDays: docData.recurringDays
         };
 
-        categoryMap[docData.category].amount += transaction.amount;
-        categoryMap[docData.category].transactions.push(transaction);
+        if (transaction.category) {
+          categoryMap[docData.category].amount += transaction.amount;
+          categoryMap[docData.category].transactions.push(transaction);
+        }
       });
 
       return categoryMap;
