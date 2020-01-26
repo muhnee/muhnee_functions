@@ -95,7 +95,7 @@ export const getCurrentTransactionSummary = functions.https.onCall(
       if (!summaryTypes.includes(summaryType)) {
         throw new HttpsError(
           "invalid-argument",
-          `summaryType must one of ${JSON.stringify(transactionTypes)}`
+          `summaryType must one of ${JSON.stringify(summaryTypes)}`
         );
       }
       if (!transactionTypes.includes(transactionType)) {
@@ -134,30 +134,44 @@ export const getCurrentTransactionSummary = functions.https.onCall(
         };
       });
 
-      let startDate = moment();
-      let endDate = moment();
+      let startDate = moment().startOf("week");
+      let endDate = moment().endOf("week");
 
       if (summaryType === "week") {
-        startDate = date.startOf("week");
-        endDate = date.endOf("week");
+        startDate = moment().startOf("week");
+        endDate = moment().endOf("week");
       }
       if (summaryType === "month") {
-        startDate = date.startOf("month");
-        endDate = date.endOf("month");
+        startDate = moment().startOf("month");
+        endDate = moment().endOf("month");
       }
       if (summaryType === "year") {
-        startDate = date.startOf("year");
-        endDate = date.endOf("year");
+        startDate = moment().startOf("year");
+        endDate = moment().endOf("year");
       }
 
+      console.log(firestoreMonth, transactionType);
+
       const transactionDocs: FirebaseFirestore.QuerySnapshot = await db
+        .collection("users")
+        .doc(user)
         .collection("budget")
         .doc(firestoreMonth)
         .collection("transactions")
         .where("type", "==", transactionType)
-        .where("timestamp", ">=", startDate.toDate())
-        .where("timestamp", "<=", endDate.toDate())
+        .where(
+          "timestamp",
+          ">",
+          admin.firestore.Timestamp.fromDate(startDate.toDate())
+        )
+        .where(
+          "timestamp",
+          "<",
+          admin.firestore.Timestamp.fromDate(endDate.toDate())
+        )
+        .orderBy("timestamp", "desc")
         .get();
+      console.log(transactionDocs);
 
       transactionDocs.docs.forEach(doc => {
         let docData = doc.data();
