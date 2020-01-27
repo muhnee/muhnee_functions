@@ -6,7 +6,11 @@ import {
   onDeleteTransaction
 } from "./functions/transactions";
 import { geosuggestions } from "./functions/geosuggestions";
-import { getSummary, getCurrentTransactionSummary } from "./functions/query";
+import {
+  getSummary,
+  getCurrentTransactionSummary,
+  getTransactionSummaryMobile
+} from "./functions/query";
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -30,3 +34,5 @@ export const getGeosuggestions = geosuggestions;
 export const getSummaryForTransactions = getSummary;
 
 export const getCurrentSummaryforTransactions = getCurrentTransactionSummary;
+
+export const getCurrentSummaryforTransactionMobile = getTransactionSummaryMobile;

@@ -198,3 +198,116 @@ export const getCurrentTransactionSummary = functions.https.onCall(
     throw new HttpsError("unauthenticated", "User unauthenticated");
   }
 );
+
+export const getTransactionSummaryMobile = functions.https.onCall(
+  async (data, context) => {
+    const summaryType = data.summaryType;
+    const transactionType = data.transactionType;
+
+    const date = data.date ? moment(data.date) : moment();
+
+    const summaryTypes = ["week", "month", "year"];
+
+    const transactionTypes = ["income", "expense"];
+
+    const firestoreMonth = `${date.year()}-${date.month() + 1}`;
+    if (context.auth) {
+      // Cannot run this locally as
+      // Emulation of context.auth is currently unavailable.
+      const user = context.auth.uid;
+
+      if (!summaryTypes.includes(summaryType)) {
+        throw new HttpsError(
+          "invalid-argument",
+          `summaryType must one of ${JSON.stringify(summaryTypes)}`
+        );
+      }
+      if (!transactionTypes.includes(transactionType)) {
+        throw new HttpsError(
+          "invalid-argument",
+          `transactionType must one of ${JSON.stringify(transactionTypes)}`
+        );
+      }
+
+      const categoryMap: {
+        [id: string]: {
+          id?: string;
+          name: string;
+          icon?: string;
+          amount: number;
+          transactions: Transaction[];
+        };
+      } = {};
+
+      let startDate = moment().startOf("week");
+      let endDate = moment().endOf("week");
+
+      if (summaryType === "week") {
+        startDate = moment().startOf("week");
+        endDate = moment().endOf("week");
+      }
+      if (summaryType === "month") {
+        startDate = moment().startOf("month");
+        endDate = moment().endOf("month");
+      }
+      if (summaryType === "year") {
+        startDate = moment().startOf("year");
+        endDate = moment().endOf("year");
+      }
+
+      console.log(firestoreMonth, transactionType);
+
+      const transactionDocs: FirebaseFirestore.QuerySnapshot = await db
+        .collection("users")
+        .doc(user)
+        .collection("budget")
+        .doc(firestoreMonth)
+        .collection("transactions")
+        .where("type", "==", transactionType)
+        .where(
+          "timestamp",
+          ">",
+          admin.firestore.Timestamp.fromDate(startDate.toDate())
+        )
+        .where(
+          "timestamp",
+          "<",
+          admin.firestore.Timestamp.fromDate(endDate.toDate())
+        )
+        .orderBy("timestamp", "desc")
+        .get();
+      console.log(transactionDocs);
+
+      transactionDocs.docs.forEach(doc => {
+        let docData = doc.data();
+
+        const transaction: Transaction = {
+          type: docData.type,
+          amount: docData.amount,
+          description: docData.description,
+          category: docData.category,
+          taxDeductible: docData.taxDeductible,
+          timestamp: docData.timestamp,
+          id: doc.id,
+          recurringDays: docData.recurringDays
+        };
+
+        if (transaction.category) {
+          if (categoryMap[docData.category]) {
+            categoryMap[docData.category].amount += transaction.amount;
+            categoryMap[docData.category].transactions.push(transaction);
+          } else {
+            categoryMap[docData.category] = {
+              name: transaction.category,
+              transactions: [transaction],
+              amount: transaction.amount
+            };
+          }
+        }
+      });
+
+      return categoryMap;
+    }
+    throw new HttpsError("unauthenticated", "User unauthenticated");
+  }
+);
