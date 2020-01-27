@@ -229,14 +229,16 @@ export const getTransactionSummaryMobile = functions.https.onCall(
         );
       }
 
+      type CategorySummary = {
+        id?: string;
+        name: string;
+        icon?: string;
+        amount: number;
+        transactions: Transaction[];
+      };
+
       const categoryMap: {
-        [id: string]: {
-          id?: string;
-          name: string;
-          icon?: string;
-          amount: number;
-          transactions: Transaction[];
-        };
+        [id: string]: CategorySummary;
       } = {};
 
       let startDate = moment().startOf("week");
@@ -306,7 +308,10 @@ export const getTransactionSummaryMobile = functions.https.onCall(
         }
       });
 
-      return categoryMap;
+      const summary: CategorySummary[] = Object.keys(categoryMap).map(
+        key => categoryMap[key]
+      );
+      return summary;
     }
     throw new HttpsError("unauthenticated", "User unauthenticated");
   }
