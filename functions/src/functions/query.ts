@@ -308,9 +308,9 @@ export const getTransactionSummaryMobile = functions.https.onCall(
         }
       });
 
-      const summary: CategorySummary[] = Object.keys(categoryMap).map(
-        key => categoryMap[key]
-      );
+      const summary: CategorySummary[] = Object.keys(categoryMap)
+        .map(key => categoryMap[key])
+        .sort((a, b) => (a.amount > b.amount ? -1 : 1));
       return summary;
     }
     throw new HttpsError("unauthenticated", "User unauthenticated");
