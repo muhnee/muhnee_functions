@@ -28,30 +28,6 @@ export const createUser = functions.auth.user().onCreate(async user => {
     .collection("budget")
     .doc(`${moment().year()}-${moment().month() + 1}`)
     .set({ year: moment().year(), month: moment().month() });
-
-  await db
-    .collection("users")
-    .doc(user.uid)
-    .collection("categories")
-    .doc("expense")
-    .collection("types")
-    .add({ name: "Food" });
-
-  await db
-    .collection("users")
-    .doc(user.uid)
-    .collection("categories")
-    .doc("expense")
-    .collection("types")
-    .add({ name: "Bills" });
-
-  await db
-    .collection("users")
-    .doc(user.uid)
-    .collection("categories")
-    .doc("income")
-    .collection("types")
-    .add({ name: "Income" });
 });
 
 export const onDeleteUser = functions.auth.user().onDelete(async user => {
