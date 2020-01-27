@@ -7,6 +7,14 @@ import { Transaction } from "../types/Transaction";
 
 const db = admin.firestore();
 
+type CategorySummary = {
+  id?: string;
+  name: string;
+  icon?: string;
+  amount: number;
+  transactions: Transaction[];
+};
+
 export const getSummary = functions.https.onCall(async (data, context) => {
   const month = data.month;
 
@@ -114,13 +122,7 @@ export const getCurrentTransactionSummary = functions.https.onCall(
         .get();
 
       const categoryMap: {
-        [id: string]: {
-          id: string;
-          name: string;
-          icon: string;
-          amount: number;
-          transactions: Transaction[];
-        };
+        [id: string]: CategorySummary;
       } = {};
 
       categories.docs.forEach(doc => {
@@ -193,7 +195,10 @@ export const getCurrentTransactionSummary = functions.https.onCall(
         }
       });
 
-      return categoryMap;
+      const summary: CategorySummary[] = Object.keys(categoryMap)
+        .map(key => categoryMap[key])
+        .sort((a, b) => (a.amount > b.amount ? -1 : 1));
+      return summary;
     }
     throw new HttpsError("unauthenticated", "User unauthenticated");
   }
@@ -228,14 +233,6 @@ export const getTransactionSummaryMobile = functions.https.onCall(
           `transactionType must one of ${JSON.stringify(transactionTypes)}`
         );
       }
-
-      type CategorySummary = {
-        id?: string;
-        name: string;
-        icon?: string;
-        amount: number;
-        transactions: Transaction[];
-      };
 
       const categoryMap: {
         [id: string]: CategorySummary;
@@ -278,7 +275,6 @@ export const getTransactionSummaryMobile = functions.https.onCall(
         )
         .orderBy("timestamp", "desc")
         .get();
-      console.log(transactionDocs);
 
       transactionDocs.docs.forEach(doc => {
         let docData = doc.data();
