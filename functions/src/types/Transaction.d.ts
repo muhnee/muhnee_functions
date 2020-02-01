@@ -1,4 +1,5 @@
 import firebase from "firebase-admin";
+import { Category } from ".";
 export type TransactionTypes = "expense" | "income";
 
 export type RecurringDays = 0 | 1 | 2 | 5 | 7 | 14 | 21 | 32;
@@ -9,7 +10,7 @@ export interface Transaction {
    * the category is a UID to the doc found in the collection
    * `/users/{uid}/categories/{type}/types/`
    */
-  category: string;
+  category: string | Category;
 
   /**
    * The amount of the transaction

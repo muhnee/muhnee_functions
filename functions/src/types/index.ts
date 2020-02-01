@@ -9,7 +9,7 @@ export interface Category {
   id: string;
 
   // the amount
-  amount: number;
+  amount?: number;
 }
 
 export interface _Category {
