@@ -235,6 +235,7 @@ export const getTransactions = functions.https.onCall(async (data, context) => {
         amount: docData.amount,
         description: docData.description,
         category: category,
+        categoryName: category.name,
         taxDeductible: docData.taxDeductible,
         timestamp: moment(firestoreTimestamp.toDate()).toISOString(),
         id: doc.id,
