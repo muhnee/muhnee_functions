@@ -12,14 +12,14 @@ export const createUser = functions.auth.user().onCreate(async user => {
   await db
     .collection("users")
     .doc(user.uid)
-    .set({
+    .update({
       uid,
       email,
       displayName,
       emailVerified,
       photoURL,
       onboarded: false,
-      monthlySavingsGoal: 0
+      monthlySavingsGoal: 250
     });
 
   await db
