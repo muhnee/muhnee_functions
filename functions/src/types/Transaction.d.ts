@@ -12,6 +12,8 @@ export interface Transaction {
    */
   category: string | Category;
 
+  categoryName?: string;
+
   /**
    * The amount of the transaction
    */
@@ -25,7 +27,7 @@ export interface Transaction {
   /**
    * Timestamp
    */
-  timestamp: firebase.firestore.Timestamp;
+  timestamp: firebase.firestore.Timestamp | string;
 
   /**
    * Whether or not the item is tax deductable

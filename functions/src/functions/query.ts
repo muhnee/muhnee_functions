@@ -228,13 +228,15 @@ export const getTransactions = functions.https.onCall(async (data, context) => {
           ? categoryMap.expense[docData.category]
           : categoryMap.income[docData.category];
 
+      const firestoreTimestamp: admin.firestore.Timestamp = docData.timestamp;
+
       const transaction: Transaction = {
         type: docData.type,
         amount: docData.amount,
         description: docData.description,
         category: category,
         taxDeductible: docData.taxDeductible,
-        timestamp: docData.timestamp,
+        timestamp: moment(firestoreTimestamp.toDate()).toISOString(),
         id: doc.id,
         recurringDays: docData.recurringDays
       };
