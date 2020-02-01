@@ -1,4 +1,5 @@
 import * as functions from "firebase-functions";
+import * as utils from "../utils/deleteCollection";
 import admin from "firebase-admin";
 
 import moment from "moment";
@@ -12,7 +13,7 @@ export const createUser = functions.auth.user().onCreate(async user => {
   await db
     .collection("users")
     .doc(user.uid)
-    .update({
+    .set({
       uid,
       email,
       displayName,
@@ -38,6 +39,19 @@ export const onDeleteUser = functions.auth.user().onDelete(async user => {
     .doc(user.uid)
     .delete();
   const storage = admin.storage();
+
+  await utils.deleteCollection(
+    db,
+    `/users/${user.uid}/categories/expense/types`,
+    20
+  );
+  await utils.deleteCollection(
+    db,
+    `/users/${user.uid}/categories/income/types`,
+    20
+  );
+  await utils.deleteCollection(db, `/users/${user.uid}/categories`, 20);
+  await utils.deleteCollection(db, `/users/${user.uid}/budget`, 20);
 
   await storage.bucket().deleteFiles({ prefix: `users/${user.uid}` });
 });
