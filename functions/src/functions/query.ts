@@ -8,7 +8,7 @@ import { CategoryMap, Category } from "../types";
 const db = admin.firestore();
 
 type CategorySummary = {
-  id?: string;
+  id: string;
   name: string;
   icon?: string;
   amount: number;
@@ -107,11 +107,17 @@ export const getCurrentTransactionSummary = functions.https.onCall(
       transactionDocs.docs.forEach(doc => {
         let docData = doc.data();
 
+        let category: Category = {
+          id: categoryMap[docData.category].id,
+          name: categoryMap[docData.category].name,
+          icon: categoryMap[docData.category].icon
+        };
+
         const transaction: Transaction = {
           type: docData.type,
           amount: docData.amount,
           description: docData.description,
-          category: docData.category,
+          category: category,
           taxDeductible: docData.taxDeductible,
           timestamp: docData.timestamp,
           id: doc.id,
@@ -183,10 +189,32 @@ export const getTransactions = functions.https.onCall(async (data, context) => {
       };
     });
 
+    let startDate = moment().startOf("week");
+    let endDate = moment().endOf("week");
+
+    if (summaryType === "week") {
+      startDate = moment().startOf("week");
+      endDate = moment().endOf("week");
+    }
+    if (summaryType === "month") {
+      startDate = moment().startOf("month");
+      endDate = moment().endOf("month");
+    }
+
     const transactionDocs: FirebaseFirestore.QuerySnapshot = await userRef
       .collection("budget")
       .doc(firestoreMonth)
       .collection("transactions")
+      .where(
+        "timestamp",
+        ">",
+        admin.firestore.Timestamp.fromDate(startDate.toDate())
+      )
+      .where(
+        "timestamp",
+        "<",
+        admin.firestore.Timestamp.fromDate(endDate.toDate())
+      )
       .orderBy("timestamp", "desc")
       .get();
 
