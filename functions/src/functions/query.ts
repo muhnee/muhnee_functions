@@ -72,16 +72,16 @@ export const getCurrentTransactionSummary = functions.https.onCall(
       let endDate = moment().endOf("week");
 
       if (summaryType === "week") {
-        startDate = moment().startOf("week");
-        endDate = moment().endOf("week");
+        startDate = moment().subtract(7, "days");
+        endDate = moment().endOf("day");
       }
       if (summaryType === "month") {
-        startDate = moment().startOf("month");
-        endDate = moment().endOf("month");
+        startDate = moment().subtract(1, "month");
+        endDate = moment().endOf("day");
       }
       if (summaryType === "year") {
-        startDate = moment().startOf("year");
-        endDate = moment().endOf("year");
+        startDate = moment().subtract(1, "year");
+        endDate = moment().endOf("day");
       }
 
       const transactionDocs: FirebaseFirestore.QuerySnapshot = await db
@@ -193,12 +193,12 @@ export const getTransactions = functions.https.onCall(async (data, context) => {
     let endDate = moment().endOf("week");
 
     if (summaryType === "week") {
-      startDate = moment().startOf("week");
-      endDate = moment().endOf("week");
+      startDate = moment().subtract(7, "days");
+      endDate = moment().endOf("day");
     }
     if (summaryType === "month") {
-      startDate = moment().startOf("month");
-      endDate = moment().endOf("month");
+      startDate = moment().subtract(1, "month");
+      endDate = moment().endOf("day");
     }
 
     const transactionDocs: FirebaseFirestore.QuerySnapshot = await userRef
