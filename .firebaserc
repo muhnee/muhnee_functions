@@ -1,6 +1,6 @@
 {
   "projects": {
-    "default": "muhnee-app",
+    "production": "muhnee-app",
     "develop": "muhnee-dev"
   }
 }
