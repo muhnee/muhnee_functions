@@ -20,6 +20,7 @@
     "@google/maps": "^1.0.2"
   },
   "devDependencies": {
+    "firebase-tools": "^7.12.1",
     "@types/google__maps": "^0.5.11",
     "firebase-functions-test": "^0.1.6",
     "tslint": "^5.12.0",
