@@ -19,4 +19,6 @@ jobs:
         run: npm install
       - name: Run Deploy
         working-directory: ./functions
-        run: npm run deploy --token ${{ secrets.FIREBASE_TOKEN }}
+        run: npm run deploy
+        with:
+          args: --token ${{ secrets.FIREBASE_TOKEN }}
