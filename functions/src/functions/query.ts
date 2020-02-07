@@ -62,9 +62,8 @@ export const getCurrentTransactionSummary = functions.https.onCall(
       };
     });
 
+    console.log(summaryType, date, dateRange, summaryType);
     const dateRange = GeneralUtils.getDateRange(date, summaryType);
-
-    console.log(summaryType, date, dateRange);
 
     const transactionDocs: FirebaseFirestore.QuerySnapshot = await UserService.getUserTransactions(
       db,
