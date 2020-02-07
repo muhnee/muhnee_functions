@@ -44,7 +44,24 @@ export const getUserTransactions = (
     endDate,
     `/users/${uid}/budget/${firestoreMonth}/transactions`
   );
-  const baseQuery = db
+
+  if (type === null) {
+    return db
+      .collection(`/users/${uid}/budget/${firestoreMonth}/transactions`)
+      .where(
+        "timestamp",
+        ">",
+        admin.firestore.Timestamp.fromDate(startDate.toDate())
+      )
+      .where(
+        "timestamp",
+        "<",
+        admin.firestore.Timestamp.fromDate(endDate.toDate())
+      )
+      .orderBy("timestamp", "desc")
+      .get();
+  }
+  return db
     .collection(`/users/${uid}/budget/${firestoreMonth}/transactions`)
     .where(
       "timestamp",
@@ -55,12 +72,7 @@ export const getUserTransactions = (
       "timestamp",
       "<",
       admin.firestore.Timestamp.fromDate(endDate.toDate())
-    );
-
-  if (type === null) {
-    return baseQuery.orderBy("timestamp", "desc").get();
-  }
-  return baseQuery
+    )
     .where("type", "==", type)
     .orderBy("timestamp", "desc")
     .get();
