@@ -1,0 +1,22 @@
+name: Build and Deploy
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [8.x]
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Install Dependencies
+        working-directory: ./functions
+        run: npm install
+      - name: Run Deploy
+        working-directory: ./functions
+        run: npm run deploy -- --token ${{ secrets.FIREBASE_TOKEN }} -P production
