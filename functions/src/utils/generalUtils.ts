@@ -14,16 +14,16 @@ export const getDateRange = (
 
   switch (summaryType) {
     case "week":
-      startDate: currentDate.subtract(1, "week");
-      endDate: currentDate.endOf("day");
+      startDate = currentDate.subtract(1, "week");
+      endDate = currentDate.endOf("day");
       break;
     case "month":
-      startDate: currentDate.subtract(1, "month");
-      endDate: currentDate.endOf("day");
+      startDate = currentDate.subtract(1, "month");
+      endDate = currentDate.endOf("day");
       break;
     case "year":
-      startDate: currentDate.subtract(1, "year");
-      endDate: currentDate.endOf("day");
+      startDate = currentDate.subtract(1, "year");
+      endDate = currentDate.endOf("day");
       break;
   }
   return {

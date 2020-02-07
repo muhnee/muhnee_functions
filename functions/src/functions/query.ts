@@ -56,7 +56,7 @@ export const getCurrentTransactionSummary = functions.https.onCall(
     } = {};
 
     categories.docs.forEach(doc => {
-      let docData = doc.data();
+      const docData = doc.data();
       categoryMap[doc.id] = {
         id: doc.id,
         name: docData.name,
@@ -77,9 +77,9 @@ export const getCurrentTransactionSummary = functions.https.onCall(
     );
 
     transactionDocs.docs.forEach(doc => {
-      let docData = doc.data();
+      const docData = doc.data();
 
-      let category: Category = {
+      const category: Category = {
         id: categoryMap[docData.category].id,
         name: categoryMap[docData.category].name,
         icon: categoryMap[docData.category].icon
@@ -140,7 +140,7 @@ export const getTransactions = functions.https.onCall(async (data, context) => {
   const categoryMap: CategoryMap = { income: {}, expense: {} };
 
   incomeCategories.docs.forEach(doc => {
-    let docData = doc.data();
+    const docData = doc.data();
 
     categoryMap.income[doc.id] = {
       id: doc.id,
@@ -150,7 +150,7 @@ export const getTransactions = functions.https.onCall(async (data, context) => {
   });
 
   expenseCategories.docs.forEach(doc => {
-    let docData = doc.data();
+    const docData = doc.data();
 
     categoryMap.expense[doc.id] = {
       id: doc.id,
@@ -172,9 +172,9 @@ export const getTransactions = functions.https.onCall(async (data, context) => {
   const result: Transaction[] = [];
 
   transactionDocs.forEach(doc => {
-    let docData = doc.data();
+    const docData = doc.data();
 
-    let category: Category =
+    const category: Category =
       docData.type === "expense"
         ? categoryMap.expense[docData.category]
         : categoryMap.income[docData.category];
