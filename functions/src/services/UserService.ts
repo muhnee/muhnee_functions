@@ -78,3 +78,8 @@ export const getUserTransactions = (
     .orderBy("timestamp", "desc")
     .get();
 };
+
+export default {
+  getUserCategories,
+  getUserTransactions
+};

@@ -67,7 +67,7 @@ export const getCurrentTransactionSummary = functions.https.onCall(
     const transactionDocs: FirebaseFirestore.QuerySnapshot = await UserService.getUserTransactions(
       db,
       context.auth.uid,
-      summaryType,
+      transactionType,
       date,
       dateRange
     );
