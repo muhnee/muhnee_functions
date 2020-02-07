@@ -71,7 +71,6 @@ export const getCurrentTransactionSummary = functions.https.onCall(
       date,
       dateRange
     );
-    console.log(transactionDocs.size);
 
     transactionDocs.docs.forEach(doc => {
       const docData = doc.data();

@@ -39,13 +39,6 @@ export const getUserTransactions = (
   const firestoreMonth = `${date.year()}-${date.month() + 1}`;
   const { startDate, endDate } = dateRange;
 
-  console.log(
-    type,
-    startDate,
-    endDate,
-    `/users/${uid}/budget/${firestoreMonth}/transactions`
-  );
-
   if (type === null) {
     return db
       .collection(`/users/${uid}/budget/${firestoreMonth}/transactions`)
