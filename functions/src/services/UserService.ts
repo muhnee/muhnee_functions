@@ -36,7 +36,7 @@ export const getUserTransactions = (
   date: moment.Moment = moment(),
   dateRange: DateRange
 ): Promise<admin.firestore.QuerySnapshot> => {
-  const firestoreMonth = `${date.year()}=${date.month() + 1}`;
+  const firestoreMonth = `${date.year()}-${date.month() + 1}`;
   const { startDate, endDate } = dateRange;
 
   console.log(
