@@ -3,17 +3,12 @@ import moment from "moment";
 import admin from "firebase-admin";
 import { HttpsError } from "firebase-functions/lib/providers/https";
 import { Transaction } from "../types/Transaction";
-import { CategoryMap, Category } from "../types";
+import { CategoryMap, Category, CategorySummary } from "../types";
+
+import * as GeneralUtils from "../utils/generalUtils";
+import * as UserService from "../services/UserService";
 
 const db = admin.firestore();
-
-type CategorySummary = {
-  id: string;
-  name: string;
-  icon?: string;
-  amount: number;
-  transactions: Transaction[];
-};
 
 export const getCurrentTransactionSummary = functions.https.onCall(
   async (data, context) => {
@@ -27,115 +22,90 @@ export const getCurrentTransactionSummary = functions.https.onCall(
     const transactionTypes = ["income", "expense"];
 
     const firestoreMonth = `${date.year()}-${date.month() + 1}`;
-    if (context.auth) {
-      // Cannot run this locally as
-      // Emulation of context.auth is currently unavailable.
-      const user = context.auth.uid;
 
-      if (!summaryTypes.includes(summaryType)) {
-        throw new HttpsError(
-          "invalid-argument",
-          `summaryType must one of ${JSON.stringify(summaryTypes)}`
-        );
-      }
-      if (!transactionTypes.includes(transactionType)) {
-        throw new HttpsError(
-          "invalid-argument",
-          `transactionType must one of ${JSON.stringify(transactionTypes)}`
-        );
-      }
-
-      const userRef = db.collection("users").doc(user);
-
-      const categories: FirebaseFirestore.QuerySnapshot = await userRef
-        .collection("categories")
-        .doc(transactionType)
-        .collection("types")
-        .get();
-
-      const categoryMap: {
-        [id: string]: CategorySummary;
-      } = {};
-
-      categories.docs.forEach(doc => {
-        let docData = doc.data();
-        categoryMap[doc.id] = {
-          id: doc.id,
-          name: docData.name,
-          icon: docData.icon,
-          amount: 0,
-          transactions: []
-        };
-      });
-
-      let startDate = moment().startOf("week");
-      let endDate = moment().endOf("week");
-
-      if (summaryType === "week") {
-        startDate = moment().subtract(7, "days");
-        endDate = moment().endOf("day");
-      }
-      if (summaryType === "month") {
-        startDate = moment().subtract(1, "month");
-        endDate = moment().endOf("day");
-      }
-      if (summaryType === "year") {
-        startDate = moment().subtract(1, "year");
-        endDate = moment().endOf("day");
-      }
-
-      const transactionDocs: FirebaseFirestore.QuerySnapshot = await db
-        .collection("users")
-        .doc(user)
-        .collection("budget")
-        .doc(firestoreMonth)
-        .collection("transactions")
-        .where("type", "==", transactionType)
-        .where(
-          "timestamp",
-          ">",
-          admin.firestore.Timestamp.fromDate(startDate.toDate())
-        )
-        .where(
-          "timestamp",
-          "<",
-          admin.firestore.Timestamp.fromDate(endDate.toDate())
-        )
-        .orderBy("timestamp", "desc")
-        .get();
-
-      transactionDocs.docs.forEach(doc => {
-        let docData = doc.data();
-
-        let category: Category = {
-          id: categoryMap[docData.category].id,
-          name: categoryMap[docData.category].name,
-          icon: categoryMap[docData.category].icon
-        };
-
-        const transaction: Transaction = {
-          type: docData.type,
-          amount: docData.amount,
-          description: docData.description,
-          category: category,
-          taxDeductible: docData.taxDeductible,
-          timestamp: docData.timestamp,
-          id: doc.id,
-          recurringDays: docData.recurringDays
-        };
-
-        if (transaction.category) {
-          categoryMap[docData.category].amount += transaction.amount;
-          categoryMap[docData.category].transactions.push(transaction);
-        }
-      });
-
-      const summary: CategorySummary[] = Object.keys(categoryMap)
-        .map(key => categoryMap[key])
-        .sort((a, b) => (a.amount > b.amount ? -1 : 1));
-      return summary;
+    if (!context.auth) {
+      throw new HttpsError("unauthenticated", "User unauthenticated");
     }
-    throw new HttpsError("unauthenticated", "User unauthenticated");
+    // Cannot run this locally as
+    // Emulation of context.auth is currently unavailable.
+    const user = context.auth.uid;
+
+    if (!summaryTypes.includes(summaryType)) {
+      throw new HttpsError(
+        "invalid-argument",
+        `summaryType must one of ${JSON.stringify(summaryTypes)}`
+      );
+    }
+    if (!transactionTypes.includes(transactionType)) {
+      throw new HttpsError(
+        "invalid-argument",
+        `transactionType must one of ${JSON.stringify(transactionTypes)}`
+      );
+    }
+
+    const userRef = db.collection("users").doc(user);
+
+    const categories: FirebaseFirestore.QuerySnapshot = await userRef
+      .collection("categories")
+      .doc(transactionType)
+      .collection("types")
+      .get();
+
+    const categoryMap: {
+      [id: string]: CategorySummary;
+    } = {};
+
+    categories.docs.forEach(doc => {
+      let docData = doc.data();
+      categoryMap[doc.id] = {
+        id: doc.id,
+        name: docData.name,
+        icon: docData.icon,
+        amount: 0,
+        transactions: []
+      };
+    });
+
+    const dateRange = GeneralUtils.getDateRange(date, summaryType);
+
+    const transactionDocs: FirebaseFirestore.QuerySnapshot = await UserService.getUserTransactions(
+      db,
+      context.auth.uid,
+      summaryType,
+      date,
+      dateRange
+    );
+
+    transactionDocs.docs.forEach(doc => {
+      let docData = doc.data();
+
+      let category: Category = {
+        id: categoryMap[docData.category].id,
+        name: categoryMap[docData.category].name,
+        icon: categoryMap[docData.category].icon
+      };
+
+      const transaction: Transaction = {
+        type: docData.type,
+        amount: docData.amount,
+        description: docData.description,
+        category: category,
+        taxDeductible: docData.taxDeductible,
+        timestamp: docData.timestamp,
+        id: doc.id,
+        recurringDays: docData.recurringDays
+      };
+
+      if (transaction.category) {
+        categoryMap[docData.category].amount += transaction.amount;
+        categoryMap[docData.category].transactions.push(transaction);
+      }
+    });
+
+    const summary: CategorySummary[] = Object.keys(categoryMap)
+      .map(key => categoryMap[key])
+      .sort((a, b) => (a.amount > b.amount ? -1 : 1));
+    return summary;
   }
 );
 
@@ -144,108 +114,87 @@ export const getTransactions = functions.https.onCall(async (data, context) => {
   const summaryTypes = ["week", "month"];
   const date: moment.Moment = data.date ? moment(data.date) : moment();
 
-  if (context.auth) {
-    const firestoreMonth = `${date.year()}-${date.month() + 1}`;
-
-    if (!summaryTypes.includes(summaryType)) {
-      throw new HttpsError(
-        "invalid-argument",
-        `summaryType must one of ${JSON.stringify(summaryTypes)}`
-      );
-    }
-    const userRef = db.collection("users").doc(context.auth.uid);
-
-    const expenseCategories: FirebaseFirestore.QuerySnapshot = await userRef
-      .collection("categories")
-      .doc("expense")
-      .collection("types")
-      .get();
-
-    const incomeCategories: FirebaseFirestore.QuerySnapshot = await userRef
-      .collection("categories")
-      .doc("income")
-      .collection("types")
-      .get();
-
-    const categoryMap: CategoryMap = { income: {}, expense: {} };
-
-    incomeCategories.docs.forEach(doc => {
-      let docData = doc.data();
-
-      categoryMap.income[doc.id] = {
-        id: doc.id,
-        name: docData.name,
-        icon: docData.icon
-      };
-    });
-
-    expenseCategories.docs.forEach(doc => {
-      let docData = doc.data();
-
-      categoryMap.expense[doc.id] = {
-        id: doc.id,
-        name: docData.name,
-        icon: docData.icon
-      };
-    });
-
-    let startDate = moment().startOf("week");
-    let endDate = moment().endOf("week");
-
-    if (summaryType === "week") {
-      startDate = moment().subtract(7, "days");
-      endDate = moment().endOf("day");
-    }
-    if (summaryType === "month") {
-      startDate = moment().subtract(1, "month");
-      endDate = moment().endOf("day");
-    }
-
-    const transactionDocs: FirebaseFirestore.QuerySnapshot = await userRef
-      .collection("budget")
-      .doc(firestoreMonth)
-      .collection("transactions")
-      .where(
-        "timestamp",
-        ">",
-        admin.firestore.Timestamp.fromDate(startDate.toDate())
-      )
-      .where(
-        "timestamp",
-        "<",
-        admin.firestore.Timestamp.fromDate(endDate.toDate())
-      )
-      .orderBy("timestamp", "desc")
-      .get();
-
-    const result: Transaction[] = [];
-
-    transactionDocs.forEach(doc => {
-      let docData = doc.data();
-
-      let category: Category =
-        docData.type === "expense"
-          ? categoryMap.expense[docData.category]
-          : categoryMap.income[docData.category];
-
-      const firestoreTimestamp: admin.firestore.Timestamp = docData.timestamp;
-
-      const transaction: Transaction = {
-        type: docData.type,
-        amount: docData.amount,
-        description: docData.description,
-        category: category,
-        categoryName: category.name,
-        taxDeductible: docData.taxDeductible,
-        timestamp: moment(firestoreTimestamp.toDate()).toISOString(),
-        id: doc.id,
-        recurringDays: docData.recurringDays
-      };
-
-      result.push(transaction);
-    });
-
-    return result;
+  if (!context.auth) {
+    throw new HttpsError("unauthenticated", "User unauthenticated");
   }
-  throw new HttpsError("unauthenticated", "User unauthenticated");
+
+  if (!summaryTypes.includes(summaryType)) {
+    throw new HttpsError(
+      "invalid-argument",
+      `summaryType must one of ${JSON.stringify(summaryTypes)}`
+    );
+  }
+
+  const expenseCategories: FirebaseFirestore.QuerySnapshot = await UserService.getUserCategories(
+    db,
+    context.auth.uid,
+    "expense"
+  );
+
+  const incomeCategories: FirebaseFirestore.QuerySnapshot = await UserService.getUserCategories(
+    db,
+    context.auth.uid,
+    "income"
+  );
+
+  const categoryMap: CategoryMap = { income: {}, expense: {} };
+
+  incomeCategories.docs.forEach(doc => {
+    let docData = doc.data();
+
+    categoryMap.income[doc.id] = {
+      id: doc.id,
+      name: docData.name,
+      icon: docData.icon
+    };
+  });
+
+  expenseCategories.docs.forEach(doc => {
+    let docData = doc.data();
+
+    categoryMap.expense[doc.id] = {
+      id: doc.id,
+      name: docData.name,
+      icon: docData.icon
+    };
+  });
+
+  const dateRange = GeneralUtils.getDateRange(date, summaryType);
+
+  const transactionDocs: FirebaseFirestore.QuerySnapshot = await UserService.getUserTransactions(
+    db,
+    context.auth.uid,
+    null,
+    date,
+    dateRange
+  );
+
+  const result: Transaction[] = [];
+
+  transactionDocs.forEach(doc => {
+    let docData = doc.data();
+
+    let category: Category =
+      docData.type === "expense"
+        ? categoryMap.expense[docData.category]
+        : categoryMap.income[docData.category];
+
+    const firestoreTimestamp: admin.firestore.Timestamp = docData.timestamp;
+
+    const transaction: Transaction = {
+      type: docData.type,
+      amount: docData.amount,
+      description: docData.description,
+      category: category,
+      categoryName: category.name,
+      taxDeductible: docData.taxDeductible,
+      timestamp: moment(firestoreTimestamp.toDate()).toISOString(),
+      id: doc.id,
+      recurringDays: docData.recurringDays
+    };
+
+    result.push(transaction);
+  });
+
+  return result;
 });
