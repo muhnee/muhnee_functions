@@ -39,6 +39,10 @@ export const getUserTransactions = (
   const firestoreMonth = `${date.year()}=${date.month() + 1}`;
   const { startDate, endDate } = dateRange;
 
+  console.log(
+    firestoreMonth,
+    `/users/${uid}/budget/${firestoreMonth}/transactions`
+  );
   const baseQuery = db
     .collection(`/users/${uid}/budget/${firestoreMonth}/transactions`)
     .where(
