@@ -64,6 +64,8 @@ export const getCurrentTransactionSummary = functions.https.onCall(
 
     const dateRange = GeneralUtils.getDateRange(date, summaryType);
 
+    console.log(summaryType, date, dateRange);
+
     const transactionDocs: FirebaseFirestore.QuerySnapshot = await UserService.getUserTransactions(
       db,
       context.auth.uid,
@@ -71,10 +73,10 @@ export const getCurrentTransactionSummary = functions.https.onCall(
       date,
       dateRange
     );
+    console.log(transactionDocs.size);
 
     transactionDocs.docs.forEach(doc => {
       const docData = doc.data();
-      console.log(docData);
 
       const category: Category = {
         id: categoryMap[docData.category].id,
