@@ -21,8 +21,6 @@ export const getCurrentTransactionSummary = functions.https.onCall(
 
     const transactionTypes = ["income", "expense"];
 
-    const firestoreMonth = `${date.year()}-${date.month() + 1}`;
-
     if (!context.auth) {
       throw new HttpsError("unauthenticated", "User unauthenticated");
     }
