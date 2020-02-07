@@ -11,10 +11,10 @@ export const deleteCollection = (
   collectionPath: string,
   batchSize: number = 20
 ) => {
-  let collectionRef: admin.firestore.CollectionReference = db.collection(
+  const collectionRef: admin.firestore.CollectionReference = db.collection(
     collectionPath
   );
-  let query: admin.firestore.Query = collectionRef
+  const query: admin.firestore.Query = collectionRef
     .orderBy("__name__")
     .limit(batchSize);
 
@@ -34,12 +34,12 @@ export const deleteQueryBatch = (
     .get()
     .then(snapshot => {
       // When there are no documents left, we are done
-      if (snapshot.size == 0) {
+      if (snapshot.size === 0) {
         return 0;
       }
 
       // Delete documents in a batch
-      let batch = db.batch();
+      const batch = db.batch();
       snapshot.docs.forEach(doc => {
         batch.delete(doc.ref);
       });

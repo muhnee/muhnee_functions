@@ -1,3 +1,5 @@
+import { Transaction } from "./Transaction";
+
 export interface Category {
   // the name of the category
   name?: string;
@@ -7,9 +9,13 @@ export interface Category {
 
   // the id of the category
   id: string;
+}
 
+export interface CategorySummary extends Category {
   // the amount
-  amount?: number;
+  amount: number;
+
+  transactions: Transaction[];
 }
 
 export interface _Category {
