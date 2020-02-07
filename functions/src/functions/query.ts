@@ -44,9 +44,7 @@ export const getCurrentTransactionSummary = functions.https.onCall(
     const userRef = db.collection("users").doc(user);
 
     const categories: FirebaseFirestore.QuerySnapshot = await userRef
-      .collection("categories")
-      .doc(transactionType)
-      .collection("types")
+      .collection(`/categories/${transactionType}/types`)
       .get();
 
     const categoryMap: {
@@ -76,6 +74,7 @@ export const getCurrentTransactionSummary = functions.https.onCall(
 
     transactionDocs.docs.forEach(doc => {
       const docData = doc.data();
+      console.log(docData);
 
       const category: Category = {
         id: categoryMap[docData.category].id,
