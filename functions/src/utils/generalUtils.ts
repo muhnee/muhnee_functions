@@ -9,21 +9,20 @@ export const getDateRange = (
   currentDate: moment.Moment,
   summaryType: "week" | "month" | "year"
 ): DateRange => {
-  switch (summaryType) {
-    case "week":
-      return {
-        startDate: currentDate.subtract(1, "week").startOf("day"),
-        endDate: currentDate.endOf("day")
-      };
-    case "month":
-      return {
-        startDate: currentDate.subtract(1, "month").startOf("day"),
-        endDate: currentDate.endOf("day")
-      };
-    case "year":
-      return {
-        startDate: currentDate.subtract(1, "year").startOf("day"),
-        endDate: currentDate.endOf("day")
-      };
+  if (summaryType === "week") {
+    return {
+      startDate: currentDate.subtract(1, "week"),
+      endDate: currentDate.endOf("day")
+    };
+  } else if (summaryType === "month") {
+    return {
+      startDate: currentDate.subtract(1, "month").startOf("day"),
+      endDate: currentDate.endOf("day")
+    };
+  } else {
+    return {
+      startDate: currentDate.subtract(1, "year").startOf("day"),
+      endDate: currentDate.endOf("day")
+    };
   }
 };
