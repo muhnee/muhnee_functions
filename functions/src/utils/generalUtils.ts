@@ -11,18 +11,22 @@ export const getDateRange = (
 ): DateRange => {
   if (summaryType === "week") {
     return {
-      startDate: currentDate.subtract(1, "week"),
-      endDate: currentDate.endOf("day")
+      startDate: moment(currentDate).subtract(1, "week"),
+      endDate: moment(currentDate).endOf("day")
     };
   } else if (summaryType === "month") {
     return {
-      startDate: currentDate.subtract(1, "month").startOf("day"),
-      endDate: currentDate.endOf("day")
+      startDate: moment(currentDate)
+        .subtract(1, "month")
+        .startOf("day"),
+      endDate: moment(currentDate).endOf("day")
     };
   } else {
     return {
-      startDate: currentDate.subtract(1, "year").startOf("day"),
-      endDate: currentDate.endOf("day")
+      startDate: moment(currentDate)
+        .subtract(1, "year")
+        .startOf("day"),
+      endDate: moment(currentDate).endOf("day")
     };
   }
 };
