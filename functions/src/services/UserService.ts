@@ -40,6 +40,7 @@ export const getUserTransactions = (
   const { startDate, endDate } = dateRange;
 
   console.log(
+    type,
     startDate,
     endDate,
     `/users/${uid}/budget/${firestoreMonth}/transactions`
