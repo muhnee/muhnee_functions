@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions";
 import moment from "moment";
 import admin from "firebase-admin";
+import QueueItem from "../types/Queue";
 
 const db = admin.firestore();
 
@@ -20,10 +21,10 @@ export const onAddNewTransaction = functions.firestore
       .doc(context.params.userId)
       .get();
 
+    const transaction: any = snapshot.data();
+
     if (currentMonth.exists) {
       const dataFromCurrentMonth: any = currentMonth.data();
-
-      const transaction: any = snapshot.data();
 
       const transactionType = transaction.type.toLowerCase();
       if (transactionType === "expense") {
@@ -48,7 +49,6 @@ export const onAddNewTransaction = functions.firestore
     } else {
       // we create the month then add the transaction
       const { month } = context.params;
-      const transaction: any = snapshot.data();
 
       const userDocument: any = userDoc.data();
 
@@ -69,6 +69,21 @@ export const onAddNewTransaction = functions.firestore
               .toDate()
           )
         });
+    }
+
+    if (transaction.recurringDays && transaction.recurringDays > 0) {
+      const timestamp: admin.firestore.Timestamp = transaction.timestamp;
+
+      const momentTimestamp = moment(timestamp.toDate());
+      const newQueueItem: QueueItem = {
+        timestamp: admin.firestore.Timestamp.fromDate(
+          momentTimestamp.add(transaction.recurringDays, "days").toDate()
+        ),
+        transaction: transaction
+      };
+      await db
+        .collection(`/users/${context.params.userId}/queue`)
+        .add(newQueueItem);
     }
   });
 
