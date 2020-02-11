@@ -39,7 +39,9 @@ export const getUpcomingTransactions = functions.pubsub
             .then(snapshot => {
               snapshot.forEach(doc => {
                 return db
-                  .collection(`/users/${uid}/budget/${firestoreMonth}`)
+                  .collection(
+                    `/users/${uid}/budget/${firestoreMonth}/transactions`
+                  )
                   .add({
                     ...doc.data().transaction,
                     timestamp: doc.data().timestamp
