@@ -3,7 +3,7 @@ import moment from "moment";
 
 import { DateRange } from "../utils/generalUtils";
 
-import { TransactionTypes } from "../types/Transaction";
+import { TransactionTypes, Transaction } from "../types/Transaction";
 
 /**
  * get's a users Categories defined for the budget app
@@ -72,7 +72,35 @@ export const getUserTransactions = (
     .get();
 };
 
-export default {
-  getUserCategories,
-  getUserTransactions
+export const createTransaction = (
+  db: admin.firestore.Firestore,
+  uid: string,
+  transaction: Transaction
+) => {
+  let timestamp: moment.Moment;
+  if (typeof transaction.timestamp === "string") {
+    timestamp = moment(transaction.timestamp);
+  } else {
+    timestamp = moment(transaction.timestamp.toDate());
+  }
+
+  const firestoreMonth = `${timestamp.year()}-${timestamp.month() + 1}`;
+
+  return db
+    .collection(`/users/${uid}/budget/${firestoreMonth}/transactions`)
+    .add({
+      category:
+        typeof transaction.category === "string"
+          ? transaction.category
+          : transaction.category.id,
+      amount: transaction.amount,
+      description: transaction.description,
+      taxDeductible: transaction.taxDeductible,
+      type: transaction.type,
+      receipt: transaction.receipt,
+      recurringDays: transaction.recurringDays,
+      timestamp: admin.firestore.Timestamp.fromDate(timestamp.toDate())
+    });
 };
+
+export default { createTransaction, getUserCategories, getUserTransactions };

@@ -10,6 +10,7 @@ import {
   getCurrentTransactionSummary,
   getTransactions
 } from "./functions/query";
+import { getUpcomingTransactions } from "./functions/scheduled";
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -33,3 +34,5 @@ export const getGeosuggestions = geosuggestions;
 export const getCurrentSummaryforTransactions = getCurrentTransactionSummary;
 
 export const getAllTransactions = getTransactions;
+
+export const runScheduledGetQueueTransactions = getUpcomingTransactions;
