@@ -47,16 +47,7 @@ export const getUpcomingTransactions = functions.pubsub
                     timestamp: doc.data().timestamp
                   })
                   .then(() => {
-                    const timestamp: admin.firestore.Timestamp = doc.data()
-                      .timestamp;
-                    const newTimestamp = admin.firestore.Timestamp.fromDate(
-                      moment(timestamp.toDate())
-                        .add(doc.data().transaction.recurringDays, "days")
-                        .toDate()
-                    );
-                    return doc.ref.update({
-                      timestamp: newTimestamp
-                    });
+                    return doc.ref.delete();
                   })
                   .catch(err => {
                     console.error(err);
