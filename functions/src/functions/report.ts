@@ -39,7 +39,8 @@ export const getAllTaxDeductibleItems = functions.https.onCall(
     const months = await db
       .collection(`/users/${user}/budget`)
       .where("year", ">=", startMoment.year())
-      .where("year", "<=", startMoment.year() + 1)
-      .where();
+      .where("year", "<=", startMoment.year() + 1);
+
+    return months;
   }
 );
