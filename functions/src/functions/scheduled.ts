@@ -38,20 +38,28 @@ export const getUpcomingTransactions = functions.pubsub
             .get()
             .then(snapshot => {
               snapshot.forEach(doc => {
-                db.collection(`/users/${uid}/budget/${firestoreMonth}`).add({
-                  ...doc.data().transaction,
-                  timestamp: doc.data().timestamp
-                });
-                const timestamp: admin.firestore.Timestamp = doc.data()
-                  .timestamp;
-                const newTimestamp = admin.firestore.Timestamp.fromDate(
-                  moment(timestamp.toDate())
-                    .add(doc.data().transaction.recurringDays, "days")
-                    .toDate()
-                );
-                doc.ref.update({
-                  timestamp: newTimestamp
-                });
+                return db
+                  .collection(`/users/${uid}/budget/${firestoreMonth}`)
+                  .add({
+                    ...doc.data().transaction,
+                    timestamp: doc.data().timestamp
+                  })
+                  .then(() => {
+                    const timestamp: admin.firestore.Timestamp = doc.data()
+                      .timestamp;
+                    const newTimestamp = admin.firestore.Timestamp.fromDate(
+                      moment(timestamp.toDate())
+                        .add(doc.data().transaction.recurringDays, "days")
+                        .toDate()
+                    );
+                    return doc.ref.update({
+                      timestamp: newTimestamp
+                    });
+                  })
+                  .catch(err => {
+                    console.error(err);
+                    throw new HttpsError("internal", err);
+                  });
               });
             })
             .catch(err => {
