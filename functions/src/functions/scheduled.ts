@@ -2,7 +2,6 @@ import * as functions from "firebase-functions";
 import { HttpsError } from "firebase-functions/lib/providers/https";
 import moment from "moment";
 
-import * as GeneralUtils from "../utils/generalUtils";
 import admin from "firebase-admin";
 
 const db = admin.firestore();
@@ -51,10 +50,18 @@ export const getUpcomingTransactions = functions.pubsub
                     .toDate()
                 );
                 doc.ref.update({
-                  timestamp: timestamp
+                  timestamp: newTimestamp
                 });
               });
+            })
+            .catch(err => {
+              console.error(err);
+              throw new HttpsError("internal", err);
             });
         });
+      })
+      .catch(err => {
+        console.error(err);
+        throw new HttpsError("internal", err);
       });
   });
