@@ -33,9 +33,9 @@ export const getAllTaxDeductibleItems = functions.https.onCall(
 
     const startMoment = moment(start);
 
-    const startTimestamp: admin.firestore.Timestamp = admin.firestore.Timestamp.fromDate(
-      startMoment.toDate()
-    );
+    // const startTimestamp: admin.firestore.Timestamp = admin.firestore.Timestamp.fromDate(
+    //   startMoment.toDate()
+    // );
     const months = await db
       .collection(`/users/${user}/budget`)
       .where("year", ">=", startMoment.year())
