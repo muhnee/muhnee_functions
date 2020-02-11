@@ -1,4 +1,5 @@
 import * as functions from "firebase-functions";
+import moment from "moment";
 import admin from "firebase-admin";
 
 const db = admin.firestore();
@@ -61,7 +62,12 @@ export const onAddNewTransaction = functions.firestore
           month: month.split("-")[1],
           expenses: transaction.type === "expense" ? transaction.amount : 0,
           income: transaction.type === "income" ? transaction.amount : 0,
-          savingsGoal: userDocument.monthlySavingsGoal || 0
+          savingsGoal: userDocument.monthlySavingsGoal || 0,
+          timestamp: admin.firestore.Timestamp.fromDate(
+            moment(month, "YYYY-MM")
+              .startOf("month")
+              .toDate()
+          )
         });
     }
   });
