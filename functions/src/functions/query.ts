@@ -261,7 +261,7 @@ export const getScheduledTransactions = functions.https.onCall(
           description: docData.transaction.description,
           timestamp: createTimestamp,
           category: category,
-          categoryName: category.name,
+          categoryName: category.name || null,
           type: docData.transaction.type,
           taxDeductible: docData.transaction.taxDeductible,
           receipt: docData.transaction.receipt,
