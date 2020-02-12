@@ -251,8 +251,8 @@ export const getScheduledTransactions = functions.https.onCall(
 
       const category: Category =
         docData.type === "expense"
-          ? categoryMap.expense[docData.category]
-          : categoryMap.income[docData.category];
+          ? categoryMap.expense[docData.transaction.category]
+          : categoryMap.income[docData.transaction.category];
 
       const queueItem: QueueItemResponse = {
         timestamp: createTimestamp,
