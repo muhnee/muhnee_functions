@@ -206,7 +206,7 @@ export const getScheduledTransactions = functions.https.onCall(
 
     const userQueue = await db
       .collection(`/users/${uid}/queue`)
-      .orderBy("timestamp", "desc")
+      .orderBy("timestamp", "asc")
       .get();
 
     const result: QueueItemResponse[] = [];
