@@ -4,6 +4,7 @@ import admin from "firebase-admin";
 import { HttpsError } from "firebase-functions/lib/providers/https";
 import { Transaction } from "../types/Transaction";
 import { CategoryMap, Category, CategorySummary } from "../types";
+import { QueueItemResponse } from "../types/Queue";
 
 import * as GeneralUtils from "../utils/generalUtils";
 import * as UserService from "../services/UserService";
@@ -194,3 +195,83 @@ export const getTransactions = functions.https.onCall(async (data, context) => {
 
   return result;
 });
+
+export const getScheduledTransactions = functions.https.onCall(
+  async (data, context) => {
+    if (!context.auth) {
+      throw new HttpsError("unauthenticated", "User unauthenticated");
+    }
+
+    const uid = context.auth.uid;
+
+    const userQueue = await db.collection(`/users/${uid}/queue`).get();
+
+    const result: QueueItemResponse[] = [];
+
+    const expenseCategories: FirebaseFirestore.QuerySnapshot = await UserService.getUserCategories(
+      db,
+      context.auth.uid,
+      "expense"
+    );
+
+    const incomeCategories: FirebaseFirestore.QuerySnapshot = await UserService.getUserCategories(
+      db,
+      context.auth.uid,
+      "income"
+    );
+
+    const categoryMap: CategoryMap = { income: {}, expense: {} };
+
+    incomeCategories.docs.forEach(doc => {
+      const docData = doc.data();
+
+      categoryMap.income[doc.id] = {
+        id: doc.id,
+        name: docData.name,
+        icon: docData.icon
+      };
+    });
+
+    expenseCategories.docs.forEach(doc => {
+      const docData = doc.data();
+
+      categoryMap.expense[doc.id] = {
+        id: doc.id,
+        name: docData.name,
+        icon: docData.icon
+      };
+    });
+
+    userQueue.forEach(doc => {
+      const docData = doc.data();
+
+      const timestamp: admin.firestore.Timestamp = docData.timestamp;
+
+      const createTimestamp = moment(timestamp.toDate()).toISOString();
+
+      const category: Category =
+        docData.type === "expense"
+          ? categoryMap.expense[docData.category]
+          : categoryMap.income[docData.category];
+
+      const queueItem: QueueItemResponse = {
+        timestamp: createTimestamp,
+        transaction: {
+          amount: docData.transaction.amount,
+          description: docData.transaction.description,
+          timestamp: createTimestamp,
+          category: category,
+          categoryName: category.name,
+          type: docData.transaction.type,
+          taxDeductible: docData.transaction.taxDeductible,
+          receipt: docData.transaction.receipt,
+          recurringDays: docData.transaction.recurringDays
+        }
+      };
+
+      result.push(queueItem);
+    });
+
+    return result;
+  }
+);

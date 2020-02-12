@@ -13,4 +13,9 @@ export interface QueueItem {
   transaction?: Transaction;
 }
 
+export interface QueueItemResponse {
+  timestamp: string;
+  transaction?: Transaction;
+}
+
 export default QueueItem;
