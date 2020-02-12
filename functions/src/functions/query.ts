@@ -204,7 +204,10 @@ export const getScheduledTransactions = functions.https.onCall(
 
     const uid = context.auth.uid;
 
-    const userQueue = await db.collection(`/users/${uid}/queue`).get();
+    const userQueue = await db
+      .collection(`/users/${uid}/queue`)
+      .orderBy("timestamp", "desc")
+      .get();
 
     const result: QueueItemResponse[] = [];
 
