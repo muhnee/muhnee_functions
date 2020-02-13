@@ -9,6 +9,7 @@ import { geosuggestions } from "./functions/geosuggestions";
 import {
   getCurrentTransactionSummary,
   getScheduledTransactions,
+  deleteScheduledTransaction,
   getTransactions
 } from "./functions/query";
 import { getUpcomingTransactions } from "./functions/scheduled";
@@ -37,5 +38,7 @@ export const getCurrentSummaryforTransactions = getCurrentTransactionSummary;
 export const getAllTransactions = getTransactions;
 
 export const getUserScheduledTransactions = getScheduledTransactions;
+
+export const deleteUserScheduledTransactions = deleteScheduledTransaction;
 
 export const runScheduledGetQueueTransactions = getUpcomingTransactions;

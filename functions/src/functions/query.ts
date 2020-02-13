@@ -278,3 +278,38 @@ export const getScheduledTransactions = functions.https.onCall(
     return result;
   }
 );
+
+export const deleteScheduledTransaction = functions.https.onCall(
+  async (data, context) => {
+    const scheduledTransactionId = data.scheduledTransactionId;
+
+    if (!context.auth) {
+      throw new HttpsError("unauthenticated", "User unauthenticated");
+    }
+
+    if (!scheduledTransactionId) {
+      throw new HttpsError(
+        "invalid-argument",
+        "model must include scheduledTransactionId"
+      );
+    }
+    const uid = context.auth.uid;
+
+    const scheduledTransaction = await db
+      .collection(`/users/${uid}/queue`)
+      .doc(scheduledTransactionId)
+      .get();
+
+    if (!scheduledTransaction.exists) {
+      throw new HttpsError(
+        "not-found",
+        `Cannot find scheduled transaction with id: ${scheduledTransactionId}`
+      );
+    }
+
+    await scheduledTransaction.ref.delete();
+    return {
+      status: "ok!"
+    };
+  }
+);
