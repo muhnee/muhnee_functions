@@ -54,4 +54,8 @@ export const onDeleteUser = functions.auth.user().onDelete(async user => {
   await utils.deleteCollection(db, `/users/${user.uid}/budget`, 20);
 
   await storage.bucket().deleteFiles({ prefix: `users/${user.uid}` });
+  await db
+    .collection("users")
+    .doc(user.uid)
+    .delete();
 });
