@@ -255,7 +255,7 @@ export const getScheduledTransactions = functions.https.onCall(
       const createTimestamp = moment(timestamp.toDate()).toISOString();
 
       const category: Category =
-        docData.type === "expense"
+        docData.transaction.type === "expense"
           ? categoryMap.expense[docData.transaction.category]
           : categoryMap.income[docData.transaction.category];
 
