@@ -245,8 +245,6 @@ export const getScheduledTransactions = functions.https.onCall(
       };
     });
 
-    console.log(categoryMap);
-
     userQueue.forEach(doc => {
       const docData = doc.data();
 
@@ -259,7 +257,6 @@ export const getScheduledTransactions = functions.https.onCall(
           ? categoryMap.expense[docData.transaction.category]
           : categoryMap.income[docData.transaction.category];
 
-      console.log(docData.transaction.category, category);
       const queueItem: QueueItemResponse = {
         id: doc.id,
         timestamp: createTimestamp,
