@@ -2,8 +2,6 @@ import * as functions from "firebase-functions";
 import * as utils from "../utils/deleteCollection";
 import admin from "firebase-admin";
 
-import moment from "moment";
-
 admin.initializeApp(functions.config().firebase);
 
 export const createUser = functions.auth.user().onCreate(async user => {
