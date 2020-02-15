@@ -22,13 +22,6 @@ export const createUser = functions.auth.user().onCreate(async user => {
       onboarded: false,
       monthlySavingsGoal: 250
     });
-
-  await db
-    .collection("users")
-    .doc(user.uid)
-    .collection("budget")
-    .doc(`${moment().year()}-${moment().month() + 1}`)
-    .set({ year: moment().year(), month: moment().month() });
 });
 
 export const onDeleteUser = functions.auth.user().onDelete(async user => {
