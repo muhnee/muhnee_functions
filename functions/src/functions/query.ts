@@ -313,3 +313,29 @@ export const deleteScheduledTransaction = functions.https.onCall(
     };
   }
 );
+
+export const getUserStats = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new HttpsError("unauthenticated", "User unauthenticated");
+  }
+
+  const uid = context.auth.uid;
+
+  const userQueue = await db
+    .collection(`/users/${uid}/queue`)
+    .where(
+      "timestamp",
+      "<=",
+      admin.firestore.Timestamp.fromDate(
+        moment()
+          .add(1, "week")
+          .toDate()
+      )
+    )
+    .orderBy("timestamp", "asc")
+    .get();
+
+  return {
+    queueSize: userQueue.size
+  };
+});
