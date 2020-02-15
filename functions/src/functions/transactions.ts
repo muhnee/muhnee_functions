@@ -23,7 +23,10 @@ export const onAddNewTransaction = functions.firestore
 
     const transaction: any = snapshot.data();
 
+    console.log(transaction);
+
     if (currentMonth.exists) {
+      console.info("Month does exists");
       const dataFromCurrentMonth: any = currentMonth.data();
 
       const transactionType = transaction.type.toLowerCase();
@@ -47,6 +50,7 @@ export const onAddNewTransaction = functions.firestore
           });
       }
     } else {
+      console.info("Month does not exist");
       // we create the month then add the transaction
       const { month } = context.params;
 
