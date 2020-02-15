@@ -6,12 +6,7 @@ import {
   onDeleteTransaction
 } from "./functions/transactions";
 import { geosuggestions } from "./functions/geosuggestions";
-import {
-  getCurrentTransactionSummary,
-  getScheduledTransactions,
-  deleteScheduledTransaction,
-  getTransactions
-} from "./functions/query";
+import * as QueryFunctions from "./functions/query";
 import { getUpcomingTransactions } from "./functions/scheduled";
 
 // // Start writing Firebase Functions
@@ -33,12 +28,17 @@ export const deleteTransaction = onDeleteTransaction;
 
 export const getGeosuggestions = geosuggestions;
 
-export const getCurrentSummaryforTransactions = getCurrentTransactionSummary;
+export const getCurrentSummaryforTransactions =
+  QueryFunctions.getCurrentTransactionSummary;
 
-export const getAllTransactions = getTransactions;
+export const getAllTransactions = QueryFunctions.getTransactions;
 
-export const getUserScheduledTransactions = getScheduledTransactions;
+export const getUserScheduledTransactions =
+  QueryFunctions.getScheduledTransactions;
 
-export const deleteUserScheduledTransactions = deleteScheduledTransaction;
+export const deleteUserScheduledTransactions =
+  QueryFunctions.deleteScheduledTransaction;
 
 export const runScheduledGetQueueTransactions = getUpcomingTransactions;
+
+export const getUserStats = QueryFunctions.getUserStats;
