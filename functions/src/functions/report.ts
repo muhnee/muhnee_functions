@@ -61,8 +61,8 @@ export const getAllTaxDeductibleItems = functions.https.onCall(
             .where("taxDeductible", "==", true)
             .get()
             .then(transactionSnapshot => {
-              transactionSnapshot.docs.forEach(doc => {
-                const docData = doc.data();
+              transactionSnapshot.docs.forEach(transactionDoc => {
+                const docData = transactionDoc.data();
 
                 const category: Category =
                   categoryMap.expense[docData.category];
