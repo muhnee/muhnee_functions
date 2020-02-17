@@ -13,7 +13,6 @@ const db = admin.firestore();
 export const getAllTaxDeductibleItems = functions.https.onCall(
   async (data, context) => {
     const start = data.start;
-    const type = data.type;
 
     if (!GeneralUtils.isIsoDate(start)) {
       throw new HttpsError("invalid-argument", "year must be a number");
