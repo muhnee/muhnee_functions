@@ -50,8 +50,16 @@ export const getAllTaxDeductibleItems = functions.https.onCall(
     // );
     await db
       .collection(`/users/${user}/budget`)
-      .where("year", ">=", startMoment.year())
-      .where("year", "<", startMoment.year() + 1)
+      .where(
+        "timestamp",
+        ">=",
+        admin.firestore.Timestamp.fromDate(startMoment.toDate())
+      )
+      .where(
+        "timestamp",
+        "<",
+        admin.firestore.Timestamp.fromDate(startMoment.add(1, "year").toDate())
+      )
       .get()
       .then(monthSnapshot => {
         monthSnapshot.docs.forEach(doc => {
