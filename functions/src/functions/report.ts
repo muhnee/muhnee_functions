@@ -87,7 +87,7 @@ export const getAllTaxDeductibleItems = functions.https.onCall(
               categoryName: category.name,
               taxDeductible: docData.taxDeductible,
               timestamp: moment(firestoreTimestamp.toDate()).toISOString(),
-              id: doc.id,
+              id: transactionDoc.id,
               recurringDays: docData.recurringDays
             };
 
