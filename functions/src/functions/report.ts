@@ -43,7 +43,7 @@ export const getAllTaxDeductibleItems = functions.https.onCall(
     });
 
     const startMoment = moment(start);
-    const transactions: Transaction[] = [];
+    let transactions: Transaction[] = [];
 
     // const startTimestamp: admin.firestore.Timestamp = admin.firestore.Timestamp.fromDate(
     //   startMoment.toDate()
@@ -72,29 +72,31 @@ export const getAllTaxDeductibleItems = functions.https.onCall(
         .where("taxDeductible", "==", true)
         .get()
         .then(transactionSnapshot => {
-          transactionSnapshot.docs.forEach(transactionDoc => {
-            const docData = transactionDoc.data();
+          console.log(transactionSnapshot.size);
+          const monthTransactions = transactionSnapshot.docs.map(
+            transactionDoc => {
+              const docData = transactionDoc.data();
 
-            const category: Category = categoryMap.expense[docData.category];
+              const category: Category = categoryMap.expense[docData.category];
 
-            const firestoreTimestamp: admin.firestore.Timestamp =
-              docData.timestamp;
+              const firestoreTimestamp: admin.firestore.Timestamp =
+                docData.timestamp;
 
-            const transaction: Transaction = {
-              type: docData.type,
-              amount: docData.amount,
-              description: docData.description,
-              category: category,
-              categoryName: category.name,
-              taxDeductible: docData.taxDeductible,
-              timestamp: moment(firestoreTimestamp.toDate()).toISOString(),
-              id: transactionDoc.id,
-              recurringDays: docData.recurringDays
-            };
-
-            transactions.push(transaction);
-            return true;
-          });
+              const transaction: Transaction = {
+                type: docData.type,
+                amount: docData.amount,
+                description: docData.description,
+                category: category,
+                categoryName: category.name,
+                taxDeductible: docData.taxDeductible,
+                timestamp: moment(firestoreTimestamp.toDate()).toISOString(),
+                id: transactionDoc.id,
+                recurringDays: docData.recurringDays
+              };
+              return transaction;
+            }
+          );
+          transactions = [...transactions, ...monthTransactions];
         })
         .catch(err => {
           console.error(err);
