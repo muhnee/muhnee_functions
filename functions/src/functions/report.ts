@@ -64,8 +64,8 @@ export const getAllTaxDeductibleItems = functions.https.onCall(
 
     const months = monthSnapshot.docs.map(doc => doc);
 
-    months.forEach(monthDoc => {
-      monthDoc.ref
+    months.forEach(async monthDoc => {
+      await monthDoc.ref
         .collection("transactions")
         .where("type", "==", "expense")
         .where("taxDeductible", "==", true)
