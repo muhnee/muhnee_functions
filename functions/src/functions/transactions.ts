@@ -23,6 +23,10 @@ export const onAddNewTransaction = functions.firestore
 
     const transaction: any = snapshot.data();
 
+    await snapshot.ref.update({
+      createdBy: context.params.uid
+    });
+
     console.log(transaction);
 
     if (currentMonth.exists) {
