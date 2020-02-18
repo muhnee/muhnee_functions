@@ -64,6 +64,8 @@ export const getAllTaxDeductibleItems = functions.https.onCall(
 
     const months = monthSnapshot.docs.map(doc => doc);
 
+    console.log(months);
+
     months.forEach(async monthDoc => {
       await monthDoc.ref
         .collection("transactions")
