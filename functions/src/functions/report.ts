@@ -100,6 +100,7 @@ export const getAllTaxDeductibleItems = functions.https.onCall(
           console.error(err);
         });
     });
+    console.log("done!");
 
     return transactions;
   }
