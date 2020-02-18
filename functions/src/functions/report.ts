@@ -94,6 +94,9 @@ export const getAllTaxDeductibleItems = functions.https.onCall(
             transactions.push(transaction);
             return true;
           });
+        })
+        .catch(err => {
+          console.error(err);
         });
     });
 
