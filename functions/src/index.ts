@@ -7,6 +7,7 @@ import {
 } from "./functions/transactions";
 import { geosuggestions } from "./functions/geosuggestions";
 import * as QueryFunctions from "./functions/query";
+import * as ReportsFunctions from "./functions/reports";
 import { getUpcomingTransactions } from "./functions/scheduled";
 
 // // Start writing Firebase Functions
@@ -42,3 +43,6 @@ export const deleteUserScheduledTransactions =
 export const runScheduledGetQueueTransactions = getUpcomingTransactions;
 
 export const getUserStats = QueryFunctions.getUserStats;
+
+export const getUserTaxDeductibleItems =
+  ReportsFunctions.getAllTaxDeductibleItem;
