@@ -97,10 +97,7 @@ export const getAllTaxDeductibleItem = functions.https.onCall(
           };
           return transaction;
         })
-      )
-      .then(transactions => {
-        return transactions;
-      });
+      );
 
     const resp: ReportResponse<Transaction[]> = {
       timestamp: moment().toISOString(),
