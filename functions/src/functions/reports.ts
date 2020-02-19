@@ -70,9 +70,11 @@ export const getAllTaxDeductibleItem = functions.https.onCall(
         );
       })
       .then(res => Promise.all(res))
-      .then(docs => docs.flat())
+      .then(docs =>
+        ([] as FirebaseFirestore.QueryDocumentSnapshot[]).concat(...docs)
+      )
       .then(trans =>
-        trans.map(doc => {
+        trans.map((doc: FirebaseFirestore.QueryDocumentSnapshot) => {
           const docData = doc.data();
 
           const category: Category =
