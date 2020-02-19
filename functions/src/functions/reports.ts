@@ -2,7 +2,6 @@ import * as functions from "firebase-functions";
 import { HttpsError } from "firebase-functions/lib/providers/https";
 import moment from "moment";
 
-import * as GeneralUtils from "../utils/generalUtils";
 import admin from "firebase-admin";
 import { Transaction } from "../types/Transaction";
 import * as UserService from "../services/UserService";
@@ -15,7 +14,7 @@ export const getAllTaxDeductibleItem = functions.https.onCall(
   async (data, context) => {
     const start = data.start;
 
-    if (!GeneralUtils.isIsoDate(start)) {
+    if (!moment(start, moment.ISO_8601).isValid()) {
       throw new HttpsError("invalid-argument", "year must be a number");
     }
 
