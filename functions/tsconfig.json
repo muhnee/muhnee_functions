@@ -6,8 +6,9 @@
     "outDir": "lib",
     "sourceMap": true,
     "strict": true,
-    "target": "es2017",
-    "esModuleInterop": true
+    "target": "es5",
+    "esModuleInterop": true,
+    "lib": ["es2019"]
   },
   "compileOnSave": true,
   "include": ["src"]
