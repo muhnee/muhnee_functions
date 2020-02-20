@@ -82,7 +82,7 @@ export const getAllTaxDeductibleItem = functions.https.onCall(
               : categoryMap.income[docData.category];
           const firestoreTimestamp: admin.firestore.Timestamp =
             docData.timestamp;
-          let transaction: Transaction = {
+          const transaction: Transaction = {
             type: docData.type,
             amount: docData.amount,
             description: docData.description,
@@ -110,7 +110,7 @@ export const getAllTaxDeductibleItem = functions.https.onCall(
                   }
                 };
               })
-              .then(transaction => {
+              .then(trans => {
                 return Promise.resolve(
                   transactionRef.getSignedUrl({
                     action: "read",
@@ -119,9 +119,9 @@ export const getAllTaxDeductibleItem = functions.https.onCall(
                 ).then(downloadUrl => {
                   return new Promise<Transaction>(resolve => {
                     resolve({
-                      ...transaction,
+                      ...trans,
                       _receipt: {
-                        ...transaction._receipt,
+                        ...trans._receipt,
                         downloadUrl: downloadUrl[0].toString()
                       }
                     });
@@ -135,7 +135,7 @@ export const getAllTaxDeductibleItem = functions.https.onCall(
           });
         });
       })
-      .then(transactions => Promise.all(transactions));
+      .then(transPromises => Promise.all(transPromises));
 
     const resp: ReportResponse<Transaction[]> = {
       timestamp: moment().toISOString(),
