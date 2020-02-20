@@ -110,7 +110,7 @@ export const getAllTaxDeductibleItem = functions.https.onCall(
                   }
                 };
               })
-              .then(trans => {
+              .then(transWithMetadata => {
                 return Promise.resolve(
                   transactionRef.getSignedUrl({
                     action: "read",
@@ -119,9 +119,9 @@ export const getAllTaxDeductibleItem = functions.https.onCall(
                 ).then(downloadUrl => {
                   return new Promise<Transaction>(resolve => {
                     resolve({
-                      ...trans,
+                      ...transWithMetadata,
                       _receipt: {
-                        ...trans._receipt,
+                        ...transWithMetadata._receipt,
                         downloadUrl: downloadUrl[0].toString()
                       }
                     });
