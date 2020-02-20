@@ -187,6 +187,7 @@ export const getTransactions = functions.https.onCall(async (data, context) => {
       taxDeductible: docData.taxDeductible,
       timestamp: moment(firestoreTimestamp.toDate()).toISOString(),
       id: doc.id,
+      receipt: docData.receipt,
       recurringDays: docData.recurringDays
     };
 
