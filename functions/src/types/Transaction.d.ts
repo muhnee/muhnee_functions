@@ -44,6 +44,8 @@ export interface Transaction {
    */
   receipt?: string | null;
 
+  _receipt?: any;
+
   /**
    * Firestore ID (used in some places)
    */

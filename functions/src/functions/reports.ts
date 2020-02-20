@@ -73,19 +73,16 @@ export const getAllTaxDeductibleItem = functions.https.onCall(
       .then(docs =>
         ([] as FirebaseFirestore.QueryDocumentSnapshot[]).concat(...docs)
       )
-      .then(trans =>
-        trans.map((doc: FirebaseFirestore.QueryDocumentSnapshot) => {
+      .then(trans => {
+        return trans.map((doc: admin.firestore.QueryDocumentSnapshot) => {
           const docData = doc.data();
-
           const category: Category =
             docData.type === "expense"
               ? categoryMap.expense[docData.category]
               : categoryMap.income[docData.category];
-
           const firestoreTimestamp: admin.firestore.Timestamp =
             docData.timestamp;
-
-          const transaction: Transaction = {
+          let transaction: Transaction = {
             type: docData.type,
             amount: docData.amount,
             description: docData.description,
@@ -97,9 +94,48 @@ export const getAllTaxDeductibleItem = functions.https.onCall(
             recurringDays: docData.recurringDays,
             receipt: docData.receipt
           };
-          return transaction;
-        })
-      );
+
+          if (docData.receipt) {
+            const transactionRef = admin
+              .storage()
+              .bucket()
+              .file(docData.receipt);
+
+            return Promise.resolve(transactionRef.getMetadata())
+              .then(metadata => {
+                return {
+                  ...transaction,
+                  _receipt: {
+                    metadata
+                  }
+                };
+              })
+              .then(transaction => {
+                return Promise.resolve(
+                  transactionRef.getSignedUrl({
+                    action: "read",
+                    expires: "03-09-2491"
+                  })
+                ).then(downloadUrl => {
+                  return new Promise<Transaction>(resolve => {
+                    resolve({
+                      ...transaction,
+                      _receipt: {
+                        ...transaction._receipt,
+                        downloadUrl: downloadUrl[0].toString()
+                      }
+                    });
+                  });
+                });
+              });
+          }
+
+          return new Promise<Transaction>(resolve => {
+            resolve(transaction);
+          });
+        });
+      })
+      .then(transactions => Promise.all(transactions));
 
     const resp: ReportResponse<Transaction[]> = {
       timestamp: moment().toISOString(),
