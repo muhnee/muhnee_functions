@@ -94,46 +94,9 @@ export const getAllTaxDeductibleItem = functions.https.onCall(
             recurringDays: docData.recurringDays,
             receipt: docData.receipt
           };
-
-          if (docData.receipt) {
-            const transactionRef = admin
-              .storage()
-              .bucket()
-              .file(docData.receipt);
-
-            return transactionRef
-              .getMetadata()
-              .then(metadata => {
-                return {
-                  ...transaction,
-                  _receipt: {
-                    metadata
-                  }
-                };
-              })
-              .then(transWithMetadata => {
-                return transactionRef
-                  .getSignedUrl({
-                    action: "read",
-                    expires: "03-09-2491"
-                  })
-                  .then(downloadUrl => {
-                    const transactionWithGsData: Transaction = {
-                      ...transWithMetadata,
-                      _receipt: {
-                        ...transWithMetadata._receipt,
-                        downloadUrl: downloadUrl[0].toString()
-                      }
-                    };
-                    return transactionWithGsData;
-                  });
-              });
-          }
-
           return transaction;
         });
-      })
-      .then(transPromises => Promise.all(transPromises));
+      });
 
     const resp: ReportResponse<Transaction[]> = {
       timestamp: moment().toISOString(),
