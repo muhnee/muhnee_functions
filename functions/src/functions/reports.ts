@@ -118,15 +118,13 @@ export const getAllTaxDeductibleItem = functions.https.onCall(
                     expires: "03-09-2491"
                   })
                   .then(downloadUrl => {
-                    return new Promise<Transaction>(resolve => {
-                      resolve({
-                        ...transWithMetadata,
-                        _receipt: {
-                          ...transWithMetadata._receipt,
-                          downloadUrl: downloadUrl[0].toString()
-                        }
-                      });
-                    });
+                    return {
+                      ...transWithMetadata,
+                      _receipt: {
+                        ...transWithMetadata._receipt,
+                        downloadUrl: downloadUrl[0].toString()
+                      }
+                    };
                   });
               });
           }
