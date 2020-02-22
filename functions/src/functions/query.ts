@@ -90,7 +90,8 @@ export const getCurrentTransactionSummary = functions.https.onCall(
         taxDeductible: docData.taxDeductible,
         timestamp: docData.timestamp,
         id: doc.id,
-        recurringDays: docData.recurringDays
+        recurringDays: docData.recurringDays,
+        notes: docData.notes
       };
 
       if (transaction.category) {
@@ -188,7 +189,8 @@ export const getTransactions = functions.https.onCall(async (data, context) => {
       timestamp: moment(firestoreTimestamp.toDate()).toISOString(),
       id: doc.id,
       receipt: docData.receipt,
-      recurringDays: docData.recurringDays
+      recurringDays: docData.recurringDays,
+      notes: docData.notes
     };
 
     result.push(transaction);
@@ -269,7 +271,8 @@ export const getScheduledTransactions = functions.https.onCall(
           type: docData.transaction.type,
           taxDeductible: docData.transaction.taxDeductible,
           receipt: docData.transaction.receipt,
-          recurringDays: docData.transaction.recurringDays
+          recurringDays: docData.transaction.recurringDays,
+          notes: docData.transaction.notes
         }
       };
 

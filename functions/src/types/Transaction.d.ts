@@ -55,4 +55,6 @@ export interface Transaction {
    * How many days does the transaction repeat itself
    */
   recurringDays?: RecurringDays;
+
+  notes?: string;
 }
